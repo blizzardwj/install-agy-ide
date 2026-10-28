@@ -1,0 +1,11 @@
+# Package archives
+*.tar.gz
+*.tgz
+*.zip
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+
