@@ -69,15 +69,21 @@ if [[ -f "$INSTALL_DIR/chrome-sandbox" ]]; then
     sudo chmod 4755 "$INSTALL_DIR/chrome-sandbox"
 fi
 
+# Detect the launcher binary (used by both CLI symlinks and desktop entry)
+IDE_BIN=""
+if [[ -f "$INSTALL_DIR/bin/antigravity-ide" ]]; then
+    IDE_BIN="$INSTALL_DIR/bin/antigravity-ide"
+elif [[ -f "$INSTALL_DIR/antigravity-ide" ]]; then
+    IDE_BIN="$INSTALL_DIR/antigravity-ide"
+else
+    echo "Error: antigravity-ide executable not found in $INSTALL_DIR" >&2
+    exit 1
+fi
+
 # Create CLI symlinks
 echo "→ Creating CLI command symlinks in /usr/local/bin ..."
-if [[ -f "$INSTALL_DIR/bin/antigravity-ide" ]]; then
-    sudo ln -sf "$INSTALL_DIR/bin/antigravity-ide" "$BIN_SYMLINK"
-    sudo ln -sf "$INSTALL_DIR/bin/antigravity-ide" "$BIN_ALIAS_SYMLINK"
-elif [[ -f "$INSTALL_DIR/antigravity-ide" ]]; then
-    sudo ln -sf "$INSTALL_DIR/antigravity-ide" "$BIN_SYMLINK"
-    sudo ln -sf "$INSTALL_DIR/antigravity-ide" "$BIN_ALIAS_SYMLINK"
-fi
+sudo ln -sf "$IDE_BIN" "$BIN_SYMLINK"
+sudo ln -sf "$IDE_BIN" "$BIN_ALIAS_SYMLINK"
 
 # Create desktop entry
 echo "→ Creating Desktop application entry ..."
@@ -94,7 +100,7 @@ sudo tee "$DESKTOP_FILE" > /dev/null <<EOF
 Name=Antigravity IDE
 Comment=Antigravity IDE
 GenericName=Text Editor
-Exec=$INSTALL_DIR/bin/antigravity-ide %F
+Exec=$IDE_BIN %F
 Icon=$ICON_PATH
 Type=Application
 StartupNotify=true
